@@ -1,21 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { site } from "@/data/site-content";
-
-const ThemeToggle = dynamic(
-  () => import("@/components/theme-toggle").then((m) => ({ default: m.ThemeToggle })),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="h-9 w-20 rounded-full border border-zinc-200/80 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/60"
-        aria-hidden
-      />
-    ),
-  },
-);
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { href: "#top", label: "Home" },

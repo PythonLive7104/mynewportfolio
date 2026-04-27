@@ -1,8 +1,9 @@
 "use client";
 
+import { useLayoutEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-export function ThemeToggle() {
+function ThemeToggleButton() {
   const { setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -19,4 +20,29 @@ export function ThemeToggle() {
       {isDark ? "Dark" : "Light"}
     </button>
   );
+}
+
+/**
+ * Renders a stable shell until the client has committed, then the real control.
+ * Avoids hydration mismatches: `useTheme().resolvedTheme` is undefined on the server
+ * and only matches the user’s theme after `next-themes` runs in the document.
+ */
+export function ThemeToggle() {
+  const [ready, setReady] = useState(false);
+  // Intentional: one paint after mount so server HTML and first client pass both use the same placeholder.
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- align with next-themes (theme only exists after client)
+    setReady(true);
+  }, []);
+
+  if (!ready) {
+    return (
+      <div
+        className="h-9 w-20 rounded-full border border-zinc-200/80 bg-zinc-100/80 dark:border-zinc-800 dark:bg-zinc-900/60"
+        aria-hidden
+      />
+    );
+  }
+
+  return <ThemeToggleButton />;
 }
